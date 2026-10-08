@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Train chess visualization: read the opening moves of a real Lichess game and rebuild the position on an empty board." />
+    <title>Blindfold Trainer</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♞</text></svg>" />
+  </head>
+  <body>
+    <header class="topbar">
+      <button class="brand" id="home-link" type="button"><span class="brand-icon">♞</span> Blindfold Trainer</button>
+      <div class="topbar-stats" id="topbar-stats">
+        <span title="Total points"><b id="stat-points">0</b> pts</span>
+        <span title="Current streak of perfect solves">🔥 <b id="stat-streak">0</b></span>
+      </div>
+    </header>
+
+    <main>
+      <!-- Landing -->
+      <section id="landing" class="view">
+        <div class="hero">
+          <h1>See the board<br /><em>without</em> the board.</h1>
+          <p class="lead">
+            We pull a random game played by a top Lichess player and show you its first moves &mdash;
+            only in notation. Play them through in your head, then rebuild the resulting position on an empty board.
+          </p>
+        </div>
+
+        <ol class="steps">
+          <li><span>1</span><div><h3>Read</h3><p>The first <i>n</i> moves of a real game appear as a move list.</p></div></li>
+          <li><span>2</span><div><h3>Visualize</h3><p>Follow the game in your mind &mdash; no board to peek at.</p></div></li>
+          <li><span>3</span><div><h3>Rebuild</h3><p>Place every piece where it ends up, submit, and get scored square by square.</p></div></li>
+        </ol>
+
+        <div class="card setup">
+          <label for="moves-range" class="setup-label">Number of moves</label>
+          <div class="moves-input">
+            <input type="range" id="moves-range" min="1" max="30" step="1" />
+            <input type="number" id="moves-number" min="1" max="30" step="1" aria-label="Number of moves" />
+          </div>
+          <p class="hint" id="moves-hint"></p>
+          <button class="btn primary big" id="start-btn" type="button">Start training</button>
+        </div>
+
+        <div class="card stats-card">
+          <div class="stat"><b id="land-points">0</b><span>points</span></div>
+          <div class="stat"><b id="land-streak">0</b><span>streak</span></div>
+          <div class="stat"><b id="land-best">0</b><span>best streak</span></div>
+          <div class="stat"><b id="land-played">0</b><span>played</span></div>
+          <div class="stat"><b id="land-perfect">0</b><span>perfect</span></div>
+          <button class="btn link" id="reset-stats" type="button">Reset stats</button>
+        </div>
+
+        <details class="card scoring">
+          <summary>How scoring works</summary>
+          <p>
+            Every square that holds a piece in either the real position or your answer counts.
+            Your accuracy is the share of those squares you got exactly right. Points earned are
+            <code>accuracy × 10 × n</code>, doubled for a perfect solve. Consecutive perfect solves build your streak.
+          </p>
+          <p>
+            Placing pieces: drag them from the palettes, or click a palette piece and then click squares.
+            Drag a piece off the board, right-click it, or use the eraser to remove it.
+          </p>
+        </details>
+      </section>
+
+      <!-- Trainer -->
+      <section id="trainer" class="view" hidden>
+        <aside class="panel">
+          <div class="panel-head">
+            <h2 id="moves-title">Moves</h2>
+            <span class="chip" id="moves-chip"></span>
+          </div>
+          <div id="status" class="status" hidden></div>
+          <ol id="move-list" class="move-list"></ol>
+
+          <div id="result" class="result" hidden>
+            <div class="result-score">
+              <div class="ring" id="result-ring"><span id="result-pct">0%</span></div>
+              <div>
+                <p class="result-title" id="result-title"></p>
+                <p class="result-sub" id="result-sub"></p>
+              </div>
+            </div>
+            <ul class="legend">
+              <li><i class="sw res-correct"></i>correct</li>
+              <li><i class="sw res-wrong"></i>wrong piece</li>
+              <li><i class="sw res-missing"></i>missing</li>
+              <li><i class="sw res-extra"></i>extra</li>
+            </ul>
+            <div class="game-info" id="game-info"></div>
+            <div class="seg" role="group" aria-label="Board view">
+              <button type="button" id="view-mine" class="active">Your answer</button>
+              <button type="button" id="view-solution">Solution</button>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn primary" id="submit-btn" type="button">Submit</button>
+            <button class="btn primary" id="next-btn" type="button" hidden>Next game</button>
+            <button class="btn" id="back-btn" type="button">Back</button>
+          </div>
+        </aside>
+
+        <div class="board-area">
+          <div class="palette" id="palette-black"></div>
+          <div class="board-frame"><div id="board" class="board"></div></div>
+          <div class="palette" id="palette-white"></div>
+          <div class="board-tools">
+            <button class="btn small" id="eraser-btn" type="button" title="Eraser: click squares to remove pieces">⌫ Eraser</button>
+            <button class="btn small" id="clear-btn" type="button">Clear board</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      Games from <a href="https://lichess.org" target="_blank" rel="noopener">lichess.org</a> &middot; board by
+      <a href="https://github.com/lichess-org/chessground" target="_blank" rel="noopener">chessground</a>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
